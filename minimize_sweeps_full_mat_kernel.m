@@ -32,7 +32,7 @@
 %Each parameter will be
 %presented in a vector, of the form [paramName, unit, range,
 %default_value, st_dev], e.g. ["Angle", "Degrees", 0:5:90, 50, 30].
-function results = minimize_sweeps_full_mat_kernel(R_list, preprocessed, kmins, varargin)
+function results = minimize_sweeps_full_mat_kernel(R_list, preprocessed, kmins, varargin) %#codegen
     arguments
         R_list
         preprocessed
@@ -496,7 +496,7 @@ function val = gaussian_value(center, sd, point)
     if(sd == 0)
         val = 1;
     else
-        val = exp(-((point-center)^2/(2*sd^2)));
+        val = (1/sqrt(2*pi)*sd)*exp(-((point-center)^2/(2*sd^2)));
     end
 end
 

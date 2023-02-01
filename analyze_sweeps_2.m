@@ -152,7 +152,7 @@ function analyze_sweeps_2(R_list, gd_param, preprocessed, param1, param2, vararg
     
     close all;
     plot(paramList{p1idx}{3}, Rmat)
-    colororder(turbo(length(paramList{p2idx}{3})))
+    colororder(cool(length(paramList{p2idx}{3})))
     xlabel(strcat(paramList{p1idx}{1}, "(", paramList{p1idx}{2}, ")"));
     ylabel("Reflectance");
     %Include other parameters in the title:

@@ -2,7 +2,7 @@
 %array of structs. Basically, it ensures consistent indexing even when
 %GD-Calc was parameterized.
 
-function result = preprocess_R_list(R_list)
+function result = preprocess_R_list(R_list) %#codegen
 
     %Arbitrary looping taking from:
     %https://www.mathworks.com/matlabcentral/answers/447469-looping-through-a-matrix-of-unknown-dimensions
@@ -50,6 +50,7 @@ function cellvec = expandRstruct(R)
     %Loop through each vector entry
     for i = 1:numStruct
         %...for each diffraction order.
+        tempR = struct();
         for j = 1:length(R)
             tempR(j).m1 = R(j).m1;
             tempR(j).m2 = R(j).m2;

@@ -32,7 +32,7 @@
 %Each parameter will be
 %presented in a vector, of the form [paramName, unit, range,
 %default_value, st_dev], e.g. ["Angle", "Degrees", 0:5:90, 50, 30].
-function results = minimize_sweeps_full_mat_kernel(R_list, preprocessed, kmins, varargin) %#codegen
+function results = minimize_sweeps_full_mat_kernel(R_list, preprocessed, kmins, varargin)
     arguments
         R_list
         preprocessed

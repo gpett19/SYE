@@ -15,11 +15,11 @@ h = 0.9; % grating height
 wlr = 1.5;
 %h = 1;
 %wavelength = 1.55;
-phi = 0; % incidence polar angle from x1 axis, deg
+phi = 0:2:80; % incidence polar angle from x1 axis, deg
 psi = 0; % incidence azimuthal angle around x1 axis (zero on x2 axis), deg
 grating_pmt = 1.444^2; % grating permittivity
 L1 = 50; % number of grating strata
-m_max = 2:30; % maximum diffraction order index
+m_max = 4; % maximum diffraction order index
 
 
 
@@ -34,20 +34,25 @@ count = 1;
 %Total number of possible combos
 totNum = length(h) * length(d1) * length(r) * length(wlr);
 
-for mL = m_max
-
-    % Specify which diffracted orders are to be retained in the calculations,
+% Specify which diffracted orders are to be retained in the calculations,
 % Eq's 4.12-13 in GD-Calc.pdf.
 order = [];
-for m2 = -mL:mL
+for m2 = -m_max:m_max
     order(end+1).m2 = m2; %#ok<SAGROW> 
-    order(end).m1 = - mL:mL;
+    order(end).m1 = - m_max:m_max;
 end
 
 
 for i = 1:length(h)
     for j = 1:length(d1)
         for k = 1:length(r)
+
+%List of possible slant scales
+sSL = 0:0.1:1;
+%Loop over said slant scales.
+for sS = 1:length(sSL)
+
+
 % Construct grating.
 clear grating
 grating.pmt = {1,grating_pmt}; % grating material permittivities
@@ -77,6 +82,22 @@ stripe.block{1}.pmt_index = 1; % first block's permittivity index
 stripe.block{2}.pmt_index = 2; % second block's permittivity index
 stratum.stripe{2} = stripe;
 clear stripe
+
+%Scales for the slating of the structure
+slantToggle = [1,1]; %Toggle for slanting; set to 1 if want slanting in that direction, 0 otherwise
+slantScale = [sSL(sS), sSL(sS)]; %The slant scales themselves; 0.5 gives vertical boundaries.
+slantScale = slantScale .* slantToggle; %"Deactivates" the unwanted slants
+for l1 = 1:L1
+    % Set first and second stripes' boundaries (c1) on positive side:
+    stratum.stripe{1}.c1 = -(((L1-l1+0.5)/L1)/2 - slantScale(1)*l1/L1)*r(k);
+    stratum.stripe{2}.c1 = -(stratum.stripe{1}.c1 - 2*slantScale(1)*l1/L1); %Need 2x factor to effectively shift it to the right.
+    % Set first and second block' boundaries (c2) on positive side:
+    stratum.stripe{2}.block{1}.c2 = -(((L1-l1+0.5)/L1)/2 - slantScale(2)*l1/L1)*r(k);
+    stratum.stripe{2}.block{2}.c2 = -(stratum.stripe{2}.block{1}.c2 - 2*slantScale(2)*l1/L1);
+    grating.stratum{end+1} = stratum;
+end
+%OLD LOOP
+%{
 for l1 = 1:L1
     % Set first and second stripes' boundaries (c1) on positive side:
     stratum.stripe{1}.c1 = -((L1-l1+0.5)/L1)/2*r(k);
@@ -86,6 +107,7 @@ for l1 = 1:L1
     stratum.stripe{2}.block{2}.c2 = -stratum.stripe{2}.block{1}.c2;
     grating.stratum{end+1} = stratum;
 end
+%}
 clear stratum
 
                 for l = 1:length(wlr)
@@ -113,8 +135,8 @@ toc
 % Compute the diffraction efficiencies.
 [R,T] = gdc_eff(scat_field,inc_field);
 
-R_list{i,j, k, l, mL} = R;
-T_list{i,j, k, l, mL} = T;
+R_list{i,j, k, l, sS} = R;
+T_list{i,j, k, l, sS} = T;
 
 pct = count / totNum * 100;
 
@@ -122,8 +144,7 @@ disp("Progress = " + string(pct) + "%")
 count = count + 1;
 
             end
-
+end
         end
     end
-end
 end

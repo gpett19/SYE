@@ -149,10 +149,30 @@ function analyze_sweeps_2(R_list, gd_param, preprocessed, param1, param2, vararg
             Rmat = Rmat';
         end
     end
+
+    %Do a bit of filtering; if the first parameter is angle, we want the
+    %option to normalize it to the fresnel reflection!
+
+    %Boolean on whether to normalize angle or not
+    normAngle = 1;
+
+    if(strcmp(paramList{p1idx}{1}, "Angle") && normAngle == 1)
+        %Compute the fresnel reflection!
+        %FIXME: This currently is hardcoded, because we don't usually save
+        %this information. REMEMBER TO CHANGE if needed!
+        n1 = 1;
+        n2 = 1.444; %Fused silica
+        theta = paramList{p1idx}{3};
+        Rs = abs(((n1*cosd(theta)-n2*sqrt(1-((n1/n2)*sind(theta)).^2))./(n1*cosd(theta)+n2*sqrt(1-(n1/n2*sind(theta)).^2)))).^2;
+        Rp = abs((n1*sqrt(1-(n1/n2 * sind(theta)).^2)-n2*cosd(theta))./(n1*sqrt(1-(n1/n2.*sind(theta)).^2)+n2.*cosd(theta))).^2;
+        Rtot = (Rs + Rp) ./ 2;
+
+        Rmat = Rmat./ Rtot;
+    end
     
     close all;
     plot(paramList{p1idx}{3}, Rmat)
-    colororder(cool(length(paramList{p2idx}{3})))
+    colororder(turbo(length(paramList{p2idx}{3})))
     xlabel(strcat(paramList{p1idx}{1}, "(", paramList{p1idx}{2}, ")"));
     ylabel("Reflectance");
     %Include other parameters in the title:
@@ -174,13 +194,19 @@ function analyze_sweeps_2(R_list, gd_param, preprocessed, param1, param2, vararg
         end
     end
     %Remove trailing comma:
-    titleStr = extractBefore(titleStr, strlength(titleStr)-1);
-
+    if titleStr ~= ""
+        titleStr = extractBefore(titleStr, strlength(titleStr)-1);
+    end
 
     title(strcat("Reflectance vs. ", paramList{p1idx}{1}, " (", titleStr ,")"))
     lgd = legend(string(paramList{p2idx}{3}));
     title(lgd, strcat(paramList{p2idx}{1}, "(", paramList{p2idx}{2},")"))
     
+    %Change the labels if normalized
+    if(strcmp(paramList{p1idx}{1}, "Angle") && normAngle == 1)
+        title(strcat("Normalized Reflectance vs. ", paramList{p1idx}{1}, " (", titleStr ,")"))
+        ylabel("Normalized Reflectance");
+    end
     
 end
 

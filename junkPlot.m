@@ -6,7 +6,7 @@ disp('test_pyramids.m')
 
 % Define parameters for grating structure and incident field:
 d1 = 1.00; % grating period in x2 direction
-d2 = 0.90; % grating period in x3 direction
+d2 = 1.00; % grating period in x3 direction
 
 %h = 0.01:0.10:1; % grating height
 h = 1;
@@ -48,13 +48,18 @@ stripe.block{1}.pmt_index = 1; % first block's permittivity index
 stripe.block{2}.pmt_index = 2; % second block's permittivity index
 stratum.stripe{2} = stripe;
 clear stripe
+
+%Scales for the slating of the structure
+slantToggle = [0, 0]; %Toggle for slanting; set to 1 if want slanting in that direction, 0 otherwise
+slantScale = [0.5, 0.5]; %The slant scales themselves; 0.5 gives vertical boundaries.
+slantScale = slantScale .* slantToggle; %"Deactivates" the unwanted slants
 for l1 = 1:L1
     % Set first and second stripes' boundaries (c1) on positive side:
-    stratum.stripe{1}.c1 = -((L1-l1+0.5)/L1)/2;
-    stratum.stripe{2}.c1 = -stratum.stripe{1}.c1;
+    stratum.stripe{1}.c1 = -(((L1-l1+0.5)/L1)/2 - slantScale(1)*l1/L1);
+    stratum.stripe{2}.c1 = -(stratum.stripe{1}.c1 - 2*slantScale(1)*l1/L1); %Need 2x factor to effectively shift it to the right.
     % Set first and second block' boundaries (c2) on positive side:
-    stratum.stripe{2}.block{1}.c2 = -((L1-l1+0.5)/L1)/2;
-    stratum.stripe{2}.block{2}.c2 = -stratum.stripe{2}.block{1}.c2;
+    stratum.stripe{2}.block{1}.c2 = -(((L1-l1+0.5)/L1)/2 - slantScale(2)*l1/L1);
+    stratum.stripe{2}.block{2}.c2 = -(stratum.stripe{2}.block{1}.c2 - 2*slantScale(2)*l1/L1);
     grating.stratum{end+1} = stratum;
 end
 clear stratum
@@ -105,6 +110,7 @@ toc
 % Plot the grating.
 clear pmt_display
 pmt_display(1).name = '';
+
 pmt_display(1).color = [];
 pmt_display(1).alpha = 1;
 pmt_display(2).name = '';

@@ -18,7 +18,7 @@ wlr = 1.5;
 phi = 0:2:80; % incidence polar angle from x1 axis, deg
 psiRng = 0:60:360; % incidence azimuthal angle around x1 axis (zero on x2 axis), deg
 grating_pmt = 1.444^2; % grating permittivity
-L1 = 60; % number of grating strata
+L1 = 40; % number of grating strata
 m_max = 4; % maximum diffraction order index
 
 
@@ -43,7 +43,7 @@ for m2 = -m_max:m_max
 end
 
 
-for rn = 1:2:8
+for rn = 1
 %Right, we now want to have several different "rows" and/or columns that all have different
 %heights, with heights defined as a percentage of the maximum height,
 %specified by parameter h.
@@ -156,15 +156,15 @@ inc_field.f3 = sind(phi)*sind(psiRng(psi))./wavelength;
 %{'
 % Run the diffraction calculations.
 tic
-[~,scat_field,inc_field] = gdc(grating,inc_field,order,false);
+%[~,scat_field,inc_field] = gdc(grating,inc_field,order,false);
 toc
 
 
 % Compute the diffraction efficiencies.
-[R,T] = gdc_eff(scat_field,inc_field);
+%[R,T] = gdc_eff(scat_field,inc_field);
 
-R_list{i,j, k, l, rn, psi} = R;
-T_list{i,j, k, l, rn, psi} = T;
+%R_list{i,j, k, l, rn, psi} = R;
+%T_list{i,j, k, l, rn, psi} = T;
 
 pct = count / totNum * 100;
 
@@ -173,7 +173,7 @@ count = count + 1;
 end
 %}'
 
-%{
+
 % Plot the grating.
 clear pmt_display
 pmt_display(1).name = '';
@@ -183,11 +183,10 @@ pmt_display(1).alpha = 1;
 pmt_display(2).name = '';
 pmt_display(2).color = [.75,.75,.75];
 pmt_display(2).alpha = 1;
-x_limit = [-0.5*h,-1.5*d1,-1.5*d2;1.5*h,1.5*d1,1.5*d2];
+x_limit = [-0.5*h,-4*d1,-1.5*d2;1.5*h,4*d1,1.5*d2];
 h_plot = gdc_plot(grating,1,pmt_display,x_limit);
 view(-25,15)
 
-%}
 
                 end
         end

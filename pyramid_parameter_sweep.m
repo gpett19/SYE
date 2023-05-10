@@ -5,20 +5,20 @@ disp(' ')
 disp('test_pyramids.m')
 
 % Define parameters for grating structure and incident field:
-d1 = 1.09; % grating period in x2 direction
-d2 = 1.09; % grating period in x3 direction
+d1 = 1.13; % grating period in x2 direction
+d2 = 1.13; % grating period in x3 direction
 %Radius of pyrs
 r = 1;
 
 
 h = 0.9; % grating height
-wlr = 1.5;
+wlr = 1.4;
 %h = 1;
 %wavelength = 1.55;
 phi = 0:2:80; % incidence polar angle from x1 axis, deg
 psi = 0; % incidence azimuthal angle around x1 axis (zero on x2 axis), deg
 grating_pmt = 1.444^2; % grating permittivity
-L1 = 50; % number of grating strata
+L1 = 100; % number of grating strata
 m_max = 4; % maximum diffraction order index
 
 
@@ -48,7 +48,7 @@ for i = 1:length(h)
         for k = 1:length(r)
 
 %List of possible slant scales
-sSL = 0:0.1:1;
+sSL = 1;
 %Loop over said slant scales.
 for sS = 1:length(sSL)
 
@@ -84,7 +84,7 @@ stratum.stripe{2} = stripe;
 clear stripe
 
 %Scales for the slating of the structure
-slantToggle = [1,1]; %Toggle for slanting; set to 1 if want slanting in that direction, 0 otherwise
+slantToggle = [1,0]; %Toggle for slanting; set to 1 if want slanting in that direction, 0 otherwise
 slantScale = [sSL(sS), sSL(sS)]; %The slant scales themselves; 0.5 gives vertical boundaries.
 slantScale = slantScale .* slantToggle; %"Deactivates" the unwanted slants
 for l1 = 1:L1
@@ -128,15 +128,15 @@ inc_field.f3 = sind(phi)*sind(psi)./wavelength;
 
 % Run the diffraction calculations.
 tic
-[~,scat_field,inc_field] = gdc(grating,inc_field,order,false);
+%[~,scat_field,inc_field] = gdc(grating,inc_field,order,false);
 toc
 
 
 % Compute the diffraction efficiencies.
-[R,T] = gdc_eff(scat_field,inc_field);
+%[R,T] = gdc_eff(scat_field,inc_field);
 
-R_list{i,j, k, l, sS} = R;
-T_list{i,j, k, l, sS} = T;
+%R_list{i,j, k, l} = R;
+%T_list{i,j, k, l} = T;
 
 pct = count / totNum * 100;
 
@@ -148,3 +148,16 @@ end
         end
     end
 end
+
+% Plot the grating.
+clear pmt_display
+pmt_display(1).name = '';
+
+pmt_display(1).color = [];
+pmt_display(1).alpha = 1;
+pmt_display(2).name = '';
+pmt_display(2).color = [.75,.75,.75];
+pmt_display(2).alpha = 1;
+x_limit = [-0.5*h,-1.5*d1,-1.5*d2;1.5*h,1.5*d1,1.5*d2];
+h_plot = gdc_plot(grating,1,pmt_display,x_limit);
+view(-25,15)

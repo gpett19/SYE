@@ -5,9 +5,9 @@
 close
 yyaxis left
 
-%plot(ffs_cone, '-b')
+plot(ffs_cone, '-b')
 hold on
-plot(ffs_pyr, '-b')
+%plot(ffs_pyr, '-b')
 
 xlabel("Layer Number")
 ylabel("Silica Fill Factor")
@@ -16,35 +16,36 @@ ylabel("Silica Fill Factor")
 
 nGrating = 1.444;
 
-%for i = 1:length(ffs_cone)
-    %neff1_cone(i) = ffs_cone(i)*nGrating + (1-ffs_cone(i))*1;
+for i = 1:length(ffs_cone)
+    neff1_cone(i) = ffs_cone(i)*nGrating + (1-ffs_cone(i))*1;
     
-    %neff2_cone(i) = sqrt(ffs_cone(i)*nGrating^2 + (1^2)*(1-ffs_cone(i)));
-%end
-
-
-for i = 1:length(ffs_pyr)
-    neff1_pyr(i) = ffs_pyr(i)*nGrating + (1-ffs_pyr(i))*1;
-    
-    neff2_pyr(i) = sqrt(ffs_pyr(i)*nGrating^2 + (1^2)*(1-ffs_pyr(i)));
+    neff2_cone(i) = sqrt(ffs_cone(i)*nGrating^2 + (1^2)*(1-ffs_cone(i)));
 end
+
+
+%for i = 1:length(ffs_pyr)
+%    neff1_pyr(i) = ffs_pyr(i)*nGrating + (1-ffs_pyr(i))*1;
+%    
+%    neff2_pyr(i) = sqrt(ffs_pyr(i)*nGrating^2 + (1^2)*(1-ffs_pyr(i)));
+%end
 
 yyaxis right
 
-%plot(neff1_cone, '--b')
-%hold on
-plot(neff1_pyr, '--r')
-
-%plot(neff2_cone, '-.b')
+plot(neff1_cone, '--b')
 hold on
-plot(neff2_pyr, '-.r')
+%plot(neff1_pyr, '--r')
+
+plot(neff2_cone, '-.b')
+%hold on
+%plot(neff2_pyr, '-.r')
 
 ylabel("Effective Refractive Index")
 
 %legend("Fill Factor (cones)", "Fill Factor (pyramids)", "n_{eff} (cones, Approx. 1)", "n_{eff} (pyrs, Approx. 1)", "n_{eff} (cones, Approx. 2)", "n_{eff} (pyrs, Approx. 2)")
 
 
-legend("Fill Factor (pyramids)", "n_{eff} (pyrs, Approx. 1)", "n_{eff} (pyrs, Approx. 2)")
+%legend("Fill Factor (pyramids)", "n_{eff} (pyrs, Approx. 1)", "n_{eff} (pyrs, Approx. 2)")
+legend("Fill Factor", "Index Approximation", "Permittivity Approximation")
 
 
 title("Fill Factor and n_{eff} vs. Layer Index")
